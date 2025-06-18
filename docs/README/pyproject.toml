@@ -1,0 +1,361 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "turath-platform"
+version = "0.1.0"
+description = "Islamic text annotation and ingestion platform with ML-powered hadith grading"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+maintainers = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+keywords = ["islamic", "hadith", "nlp", "annotation", "text-processing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+]
+
+# Core dependencies
+dependencies = [
+    # Web framework
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    
+    # Configuration management
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "PyYAML>=6.0.1",
+    
+    # Data processing
+    "pandas>=2.1.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    
+    # NLP and ML
+    "transformers>=4.35.0",
+    "torch>=2.1.0",
+    "tokenizers>=0.15.0",
+    "sentence-transformers>=2.2.0",
+    
+    # Database
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "psycopg2-binary>=2.9.0",  # PostgreSQL
+    "pymongo>=4.6.0",          # MongoDB
+    
+    # Data validation and serialization
+    "marshmallow>=3.20.0",
+    "marshmallow-sqlalchemy>=0.29.0",
+    
+    # Utilities
+    "python-multipart>=0.0.6",  # For file uploads
+    "python-dotenv>=1.0.0",
+    "rich>=13.7.0",             # Beautiful terminal output
+    "typer>=0.9.0",             # CLI framework
+    "loguru>=0.7.0",            # Logging
+    
+    # Date/time handling
+    "python-dateutil>=2.8.2",
+    "pytz>=2023.3",
+    
+    # HTTP client
+    "httpx>=0.25.0",
+    "requests>=2.31.0",
+    
+    # File processing
+    "openpyxl>=3.1.0",         # Excel files
+    "python-docx>=1.1.0",      # Word documents
+    "PyPDF2>=3.0.0",           # PDF processing
+    
+    # Arabic text processing
+    "pyarabic>=0.6.15",
+    "camel-tools>=1.5.0",
+]
+
+[project.optional-dependencies]
+# Development dependencies
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.12.0",
+    "black>=23.10.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.5.0",
+]
+
+# Testing dependencies
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.12.0",
+    "httpx>=0.25.0",  # For testing FastAPI
+    "factory-boy>=3.3.0",  # Test data generation
+]
+
+# Documentation dependencies
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mkdocstrings>=0.24.0",
+    "mkdocstrings-python>=1.7.0",
+]
+
+# Jupyter notebook dependencies
+notebook = [
+    "jupyter>=1.0.0",
+    "jupyterlab>=4.0.0",
+    "ipywidgets>=8.1.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.17.0",
+]
+
+# Production dependencies
+prod = [
+    "gunicorn>=21.2.0",
+    "psycopg2-binary>=2.9.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+]
+
+# ML/AI specific dependencies
+ml = [
+    "torch>=2.1.0",
+    "transformers>=4.35.0",
+    "datasets>=2.14.0",
+    "accelerate>=0.24.0",
+    "evaluate>=0.4.0",
+    "wandb>=0.16.0",  # Experiment tracking
+    "tensorboard>=2.15.0",
+]
+
+# Complete development setup
+all = [
+    "turath-platform[dev,test,docs,notebook,ml]"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/turath-platform"
+"Bug Reports" = "https://github.com/yourusername/turath-platform/issues"
+"Source" = "https://github.com/yourusername/turath-platform"
+"Documentation" = "https://turath-platform.readthedocs.io/"
+
+[project.scripts]
+# CLI commands for your services
+turath-annotator = "TurathAnnotator.main:app"
+turath-ingestor = "TurathIngestor.main:app"
+turath-config = "main:app"
+
+# Entry points for different services
+[project.entry-points."turath.annotators"]
+default = "TurathAnnotator.src.annotators:DefaultAnnotator"
+hadith = "TurathAnnotator.src.annotators:HadithAnnotator"
+
+[project.entry-points."turath.scorers"]
+bert = "modules.scorers:BertScorer"
+random_forest = "modules.scorers:RandomForestScorer"
+
+# Tool configurations
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "TurathAnnotator*",
+    "TurathIngestor*", 
+    "modules*",
+    "config*"
+]
+exclude = [
+    "tests*",
+    "docs*",
+    "notebooks*",
+    "data*",
+    "external_modules*"
+]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml", "*.json", "*.txt"]
+"config" = ["**/*.yaml", "**/*.yml"]
+"configs" = ["*.yml", "*.yaml"]
+
+# Black configuration
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | external_modules
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["TurathAnnotator", "TurathIngestor", "modules", "config"]
+known_third_party = ["fastapi", "pydantic", "sqlalchemy", "transformers", "torch"]
+skip_glob = ["external_modules/*"]
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "camel_tools.*",
+    "pyarabic.*",
+    "transformers.*",
+    "torch.*",
+]
+ignore_missing_imports = true
+
+# pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=TurathAnnotator",
+    "--cov=TurathIngestor", 
+    "--cov=modules",
+    "--cov=config",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+pythonpath = ["."]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "api: marks tests as API tests",
+    "ml: marks tests that require ML models",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["TurathAnnotator", "TurathIngestor", "modules", "config"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/conftest.py",
+    "external_modules/*",
+    "notebooks/*",
+    "data/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+# Ruff configuration (alternative to flake8)
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "external_modules",
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]  # Allow assert statements in tests
+
+# Bandit security linting
+[tool.bandit]
+exclude_dirs = ["tests", "external_modules"]
+skips = ["B101", "B601"]

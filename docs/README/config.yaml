@@ -1,0 +1,72 @@
+# ==================== config.yaml (Main Configuration) ====================
+# This is the main configuration file that Hydra will load by default
+
+defaults:
+  - honorifics: default
+  - titles: default
+  - locations: default
+  - names: default
+  - _self_
+
+# Model parameters
+model_name: "arabic-ner-model"
+max_sequence_length: 512
+batch_size: 32
+learning_rate: 2e-5
+
+# Processing parameters
+case_sensitive: true
+remove_diacritics: false
+normalize_text: true
+
+
+
+
+
+
+
+
+
+# ==================== Alternative Config Examples ====================
+
+# ==================== config_small.yaml ====================
+# Smaller configuration for testing or limited resources
+
+defaults:
+  - honorifics: minimal
+  - titles: basic
+  - locations: major_cities
+  - names: essential
+  - _self_
+
+model_name: "arabic-ner-small"
+max_sequence_length: 256
+batch_size: 16
+learning_rate: 3e-5
+case_sensitive: true
+remove_diacritics: true
+normalize_text: true
+
+# ==================== honorifics/minimal.yaml ====================
+# conf/honorifics/minimal.yaml
+
+before_honorifics:
+  - "الشيخ"
+  - "الإمام"
+  - "السيد"
+
+after_honorifics:
+  - "صلى الله عليه وسلم"
+  - "رضي الله عنه"
+  - "رحمه الله"
+
+prophet_honorifics:
+  - "صلى الله عليه وسلم"
+
+companion_honorifics:
+  - "رضي الله عنه"
+  - "رضي الله عنها"
+
+scholar_honorifics:
+  - "رحمه الله"
+  - "رحمها الله"

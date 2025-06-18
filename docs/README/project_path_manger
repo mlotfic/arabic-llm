@@ -1,0 +1,427 @@
+# ============================================================================
+# TRADITIONAL PROBLEMATIC APPROACHES (DON'T DO THESE)
+# ============================================================================
+
+# Problem 1: Hard-coded sys.path manipulation
+# File: src/models/user.py
+import sys
+import os
+
+# BAD: Hard-coded, fragile, not portable
+sys.path.append('/absolute/path/to/my_project')
+sys.path.append('../..')  # Fragile, breaks if file moves
+
+# Now you can import, but it's brittle
+from config.settings import DATABASE_URL
+
+# Problem 2: Relative imports (only work in packages)
+# File: src/models/user.py
+
+# BAD: Only works when run as module, fails as script
+from ...config.settings import DATABASE_URL  # ValueError!
+
+# Problem 3: os.path manipulation
+# File: tests/test_user.py
+import sys
+import os
+
+# BAD: Complex, hard to maintain
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+
+from src.models.user import User
+
+# ============================================================================
+# PROJECTPATHMANAGER SOLUTIONS (CLEAN & ROBUST)
+# ============================================================================
+
+"""
+Project Structure for Examples:
+my_project/
+├── pyproject.toml           # Project marker
+├── config/
+│   ├── __init__.py
+│   └── settings.py          # DATABASE_URL = "postgresql://..."
+├── src/
+│   ├── __init__.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py          # Level 2 from root
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── auth.py          # Level 2 from root
+│   └── utils/
+│       ├── __init__.py
+│       ├── sysconfig.py     # Our ProjectPathManager
+│       └── helpers.py       # Level 2 from root
+├── tests/
+│   ├── __init__.py
+│   └── test_user.py         # Level 1 from root
+└── scripts/
+    └── deploy.py            # Level 1 from root
+"""
+
+# ============================================================================
+# SOLUTION 1: Auto-detection (Recommended)
+# ============================================================================
+
+# File: src/utils/sysconfig.py (our ProjectPathManager file)
+import sys
+import os
+from pathlib import Path
+from typing import Optional, List, Union, Tuple
+
+class ProjectPathManager:
+    # ... (include the full class from previous artifact)
+    pass
+
+# File: src/models/user.py
+from ..utils.sysconfig import ProjectPathManager
+
+# Clean solution - auto-detects project root
+pm = ProjectPathManager()
+pm.auto_detect_and_add_root()  # Finds pyproject.toml automatically
+
+# Now you can import from anywhere in the project!
+from config.settings import DATABASE_URL, API_KEY
+from src.services.auth import authenticate_user
+
+class User:
+    def __init__(self, username):
+        self.username = username
+        self.db_url = DATABASE_URL  # Works!
+    
+    def authenticate(self, password):
+        return authenticate_user(self.username, password)  # Works!
+
+# ============================================================================
+# SOLUTION 2: Explicit level specification
+# ============================================================================
+
+# File: tests/test_user.py
+import sys
+from pathlib import Path
+
+# Add project root to path (we know we're 1 level deep)
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Alternative: Use ProjectPathManager
+from src.utils.sysconfig import ProjectPathManager
+
+pm = ProjectPathManager()
+pm.add_project_root(levels_up=1)  # We know tests/ is 1 level from root
+
+# Now we can import anything from the project
+from src.models.user import User
+from config.settings import DATABASE_URL
+from src.services.auth import authenticate_user
+
+def test_user_creation():
+    user = User("testuser")
+    assert user.username == "testuser"
+    assert user.db_url == DATABASE_URL
+
+def test_user_authentication():
+    user = User("testuser")
+    # Test authentication (assuming auth service exists)
+    result = user.authenticate("password123")
+    assert isinstance(result, bool)
+
+# ============================================================================
+# SOLUTION 3: Smart detection with fallbacks
+# ============================================================================
+
+# File: src/services/auth.py
+from ..utils.sysconfig import ProjectPathManager
+
+def setup_project_imports():
+    """Smart setup function that tries multiple strategies."""
+    pm = ProjectPathManager()
+    
+    # Strategy 1: Try auto-detection
+    if pm.auto_detect_and_add_root():
+        level = pm.get_current_file_level_from_root()
+        print(f"✓ Auto-detected root (level {level})")
+        return pm
+    
+    # Strategy 2: Try common markers
+    if pm.find_project_root(['pyproject.toml', '.git', 'setup.py']):
+        level = pm.get_current_file_level_from_root()
+        print(f"✓ Found root by markers (level {level})")
+        return pm
+    
+    # Strategy 3: Manual levels (we think we're ~2 levels deep)
+    if pm.add_project_root(levels_up=2):
+        print("✓ Added root manually (2 levels up)")
+        return pm
+    
+    print("✗ Could not setup project imports")
+    return None
+
+# Use the smart setup
+pm = setup_project_imports()
+
+# Now imports work reliably
+from config.settings import DATABASE_URL, SECRET_KEY
+from src.models.user import User
+
+def authenticate_user(username, password):
+    """Authenticate user against database."""
+    # Can access config and models easily
+    print(f"Authenticating against: {DATABASE_URL}")
+    
+    # Create user instance
+    user = User(username)
+    
+    # Your authentication logic here
+    return username == "admin" and password == SECRET_KEY
+
+# ============================================================================
+# SOLUTION 4: Context manager pattern for temporary imports
+# ============================================================================
+
+# File: scripts/deploy.py
+from pathlib import Path
+import sys
+
+class ProjectImportContext:
+    """Context manager for temporary project imports."""
+    
+def __init__(self, levels_up=1):
+        self.pm = None
+        self.levels_up = levels_up
+    
+    def __enter__(self):
+        # Add project root temporarily
+        project_root = Path(__file__).resolve().parents[self.levels_up]
+        if str(project_root) not in sys.path:
+            sys.path.insert(0, str(project_root))
+            self.added_path = str(project_root)
+            print(f"Added {project_root} to sys.path")
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Clean up
+        if hasattr(self, 'added_path') and self.added_path in sys.path:
+            sys.path.remove(self.added_path)
+            print(f"Removed {self.added_path} from sys.path")
+
+# Usage in deployment script
+def deploy_application():
+    # Temporarily add project root for imports
+    with ProjectImportContext(levels_up=1):
+        # Now we can import project modules
+        from config.settings import DATABASE_URL, SECRET_KEY
+        from src.models.user import User
+        from src.services.auth import authenticate_user
+        
+        print(f"Deploying to: {DATABASE_URL}")
+        
+        # Create admin user
+        admin = User("admin")
+        
+        # Test authentication
+        if authenticate_user("admin", SECRET_KEY):
+            print("✓ Admin authentication works")
+        else:
+            print("✗ Admin authentication failed")
+    
+    # Imports are cleaned up automatically
+    print("Deploy completed, imports cleaned up")
+
+if __name__ == "__main__":
+    deploy_application()
+
+# ============================================================================
+# SOLUTION 5: Package-level initialization
+# ============================================================================
+
+# File: src/__init__.py
+"""Initialize project-wide imports."""
+
+# Setup project paths when package is imported
+try:
+    from .utils.sysconfig import ProjectPathManager
+    
+    _pm = ProjectPathManager()
+    _project_root = _pm.auto_detect_and_add_root()
+    
+    if _project_root:
+        print(f"✓ Project initialized: {_project_root.name}")
+    else:
+        # Fallback
+        _project_root = _pm.add_project_root(levels_up=1)
+        
+except Exception as e:
+    print(f"Warning: Could not initialize project paths: {e}")
+
+# File: anywhere in src/ directory
+# Just import the package to get automatic path setup
+import src  # This runs the __init__.py and sets up paths
+
+# Now all imports work
+from config.settings import DATABASE_URL
+from models.user import User  # No need for src. prefix
+
+# ============================================================================
+# REAL-WORLD EXAMPLES
+# ============================================================================
+
+# Example 1: Django-style project
+"""
+django_project/
+├── manage.py
+├── django_project/
+│   ├── settings.py
+│   └── utils/
+│       └── sysconfig.py
+├── apps/
+│   ├── users/
+│   │   └── models.py        # Needs django_project.settings
+│   └── blog/
+│       └── views.py         # Needs users.models
+└── tests/
+    └── test_models.py       # Needs everything
+"""
+
+# File: apps/users/models.py
+from django_project.utils.sysconfig import ProjectPathManager
+
+pm = ProjectPathManager()
+pm.add_project_root(levels_up=2)  # apps/users/ -> django_project/
+
+from django_project.settings import DATABASES
+from django.db import models
+
+class User(models.Model):
+    username = models.CharField(max_length=100)
+    
+    class Meta:
+        db_table = 'users'
+
+# Example 2: Data Science project
+"""
+ml_project/
+├── .git/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── notebooks/
+│   ├── exploratory.ipynb
+│   └── utils/
+│       └── sysconfig.py
+├── src/
+│   ├── features/
+│   │   └── preprocessing.py
+│   └── models/
+│       └── neural_net.py
+└── experiments/
+    └── hyperparameter_tuning.py
+"""
+
+# File: notebooks/exploratory.ipynb (in a cell)
+# %load notebooks/utils/sysconfig.py
+import sys
+from pathlib import Path
+
+# Add project root (2 levels up from notebooks/utils/)
+sys.path.insert(0, str(Path.cwd().parents[1]))
+
+# Now we can import our modules
+from src.features.preprocessing import clean_data
+from src.models.neural_net import NeuralNetwork
+import pandas as pd
+
+# Load and process data
+data = pd.read_csv('../data/raw/dataset.csv')
+cleaned_data = clean_data(data)
+
+# Train model
+model = NeuralNetwork()
+model.train(cleaned_data)
+
+# Example 3: API project with complex structure
+"""
+api_project/
+├── requirements.txt
+├── config/
+│   ├── development.py
+│   ├── production.py
+│   └── base.py
+├── app/
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── v1/
+│   │   │   ├── endpoints/
+│   │   │   │   ├── users.py      # Level 4 from root
+│   │   │   │   └── auth.py       # Level 4 from root
+│   │   │   └── utils/
+│   │   │       └── sysconfig.py  # Level 4 from root
+│   │   └── v2/
+│   ├── models/
+│   │   └── user.py
+│   └── services/
+│       └── database.py
+└── tests/
+    ├── unit/
+    └── integration/
+"""
+
+# File: app/api/v1/endpoints/users.py
+from ..utils.sysconfig import ProjectPathManager
+
+# We're deep in the structure, so auto-detect is best
+pm = ProjectPathManager()
+root = pm.auto_detect_and_add_root()
+
+if root:
+    level = pm.get_current_file_level_from_root()
+    print(f"Users endpoint initialized at level {level}")
+
+# Now we can import from anywhere
+from config.base import DATABASE_CONFIG
+from app.models.user import User
+from app.services.database import get_db_connection
+
+def get_users():
+    """Get all users."""
+    db = get_db_connection(DATABASE_CONFIG)
+    users = User.get_all(db)
+    return [user.to_dict() for user in users]
+
+def create_user(user_data):
+    """Create a new user."""
+    db = get_db_connection(DATABASE_CONFIG)
+    user = User.create(db, **user_data)
+    return user.to_dict()
+
+# ============================================================================
+# BENEFITS SUMMARY
+# ============================================================================
+
+"""
+Benefits of using ProjectPathManager:
+
+1. ✅ PORTABLE: Works regardless of where files are moved
+2. ✅ AUTOMATIC: Auto-detects project structure
+3. ✅ CLEAN: No hard-coded paths
+4. ✅ FLEXIBLE: Multiple detection strategies
+5. ✅ DEBUGGABLE: Provides introspection methods
+6. ✅ SAFE: Cleans up after itself
+7. ✅ ROBUST: Handles edge cases and errors
+
+Traditional approaches problems:
+1. ❌ Hard-coded paths break when moved
+2. ❌ Relative imports only work in packages
+3. ❌ Complex os.path manipulations
+4. ❌ No error handling
+5. ❌ Difficult to debug
+6. ❌ Not reusable across projects
+
+Key Methods for Import Problems:
+- auto_detect_and_add_root(): Best for most cases
+- add_project_root(levels_up=N): When you know the structure
+- find_project_root(): When you have specific markers
+- get_current_file_level_from_root(): For understanding depth
+"""
