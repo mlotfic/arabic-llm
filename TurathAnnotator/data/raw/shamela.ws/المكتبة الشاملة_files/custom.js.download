@@ -1,0 +1,648 @@
+$(function(){
+    
+	function switch_modes() {
+		// convert the below code in this function to get rid of jquery
+		if (document.body.classList.contains('night')) {
+			document.body.classList.remove('night');
+			localStorage.setItem('night_mode', '0');
+		} else {
+			document.body.classList.add('night');
+			localStorage.setItem('night_mode', '1');
+		}
+		
+	}
+	document.getElementById('switch_modes').addEventListener('click', function(){
+		switch_modes();
+	});
+
+
+    var posAda = false;
+    $(".s-nav-head").on("click",function(){
+        $(this).parents(".s-nav").children("ul").slideToggle();
+        if(! posAda){
+            posAda = true;
+            setTimeout(function(){
+                var top = $(".s-nav a.active").offset()['top'] - $(".s-nav>ul").offset()['top'] - 140;
+                $(".s-nav>ul")[0].scrollTop = top;
+            },600);
+        }
+    });
+    $(".s-nav,.betaka-index").on("click",".exp_bu",function(){
+        var $this = $(this);
+        var id = $this.attr("data-id");
+        if($this.next().next()[0]){
+            $this.next().next().slideToggle();
+        }
+        else{
+            $.get(_url+"ajax/titlechilds/"+id)
+            .done(function(data){
+                $this.parent("li").append(data);
+            });
+            
+        }
+    });
+    $("#bu_goto_top,#bu_goto_bottom").on("click",function(){
+        var fld = $(this).attr("id").replace(/bu_/,'fld_');
+        var pos = $(this).attr("id").split('_')[2];
+        
+        var pageNum = $("#"+fld).val();
+        var partNum = $("#fld_part_"+pos).val() || 0;
+        var book_id = $(this).data('book_id');
+        $.get(_url+"ajax/pagenum2id/"+book_id+"/"+partNum+"/"+pageNum)
+            .done(function(page){
+                if(page < 0){
+                    alert("عفوا لا توجد صفحة بهذا الرقم");
+                    return;
+                }
+                location.href = _url+'book/'+book_id+'/'+page;
+            });
+    });
+    $("#bu_specialNum_top,#bu_specialNum_bottom").on("click",function(){
+        var fld = $(this).attr("id").replace(/bu_/,'fld_');
+        
+        var specialNum = $("#"+fld).val();
+        var book_id = $(this).data('book_id');
+        $.get(_url+"ajax/specialnumber2id/"+book_id+"/"+specialNum)
+            .done(function(page){
+                if(page < 0){
+                    alert("عفوا لا يوجد هذا الرقم");
+                    return;
+                }
+                location.href = _url+'book/'+book_id+'/'+page;
+            });
+    });    
+    
+    $("#bu_textPlus").on("click",function(){
+        //alert(2);
+        var fs = parseInt($(".nass p").css("font-size"))+1;
+        storeData("fontSize",fs);
+        $(".nass p").css("font-size",fs+'px');
+    });
+    $("#bu_textMin" ).on("click",function(){
+        var fs = parseInt($(".nass p").css("font-size"))-1;
+        storeData("fontSize",fs);
+        $(".nass p").css("font-size",fs);  
+    });
+    $("#bu_tashkeel").click(function(){
+       if($(this).hasClass("active")){
+           $(this).removeClass("active");
+           storeData("tashkeel","remove");
+           $(".nass p").each(function(){
+              $(this).data('org_nass', $(this).html());
+               $(this).html( $(this).html().replace(/[\u0617-\u061A\u064B-\u0652]/g,"") );
+           });
+       }
+      else{
+            $(this).addClass("active");
+            storeData("tashkeel","keep");
+            $(".nass p").each(function(){
+                $(this).html( $(this).data('org_nass') );
+            });
+        }
+    }); 
+    
+    if($(".s-nav>ul")[0]){
+        setTimeout(function(){
+            var top = $(".s-nav a.active").offset()['top'] - $(".s-nav>ul").offset()['top'] - 140;
+            $(".s-nav>ul")[0].scrollTop = top;
+        },200);
+    }
+    if(getData('fontSize')){
+        $(".nass p").css("font-size",getData('fontSize')+'px');
+    }
+    if(getData('tashkeel') && getData('tashkeel') == 'remove'){
+        $("#bu_tashkeel").click();
+    }
+    
+    
+    $("#sel_aqsam").select2({
+        language: "ar",
+        dir: "rtl"
+
+    });
+    $("#sel_decades").select2({
+        language: "ar",
+        dir: "rtl"
+
+    });    
+
+    $("#sel_books").select2({
+      ajax: {
+        url: _url+'/ajax/books/',
+        dataType: 'json',
+        delay: 300,
+        //cache: true,
+        processResults: function (data) {
+        //console.log(data.results.items);
+          return {
+            results: data.results.items
+          };
+        },
+
+      },
+      language: "ar",
+      dir: "rtl",
+
+      //escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        minimumInputLength: 3,
+
+      //templateResult: formatRepo, // omitted for brevity, see the source of this page
+      //templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+    });
+    $("#sel_book").select2({
+      ajax: {
+        url: _url+'/ajax/book/',
+        dataType: 'json',
+        delay: 300,
+
+        //cache: true,
+        processResults: function (data) {
+        //console.log(data.results.items);
+          return {
+            results: data.results.items
+          };
+        },
+
+      },
+      language: "ar",
+      dir: "rtl",
+      placeholder: "بحث عن كتاب",
+      allowClear: true,
+      //escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        minimumInputLength: 3,
+
+      //templateResult: formatRepo, // omitted for brevity, see the source of this page
+      //templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+    });
+    $("#sel_author,#sel_author_page").select2({
+      ajax: {
+        url: _url+'/ajax/author/',
+        dataType: 'json',
+        delay: 300,
+
+
+        //cache: true,
+        processResults: function (data) {
+        //console.log(data.results.items);
+          return {
+            results: data.results.items
+          };
+        },
+
+      },
+      placeholder: "بحث عن مؤلف",
+      allowClear: true,
+        
+      language: "ar",
+      dir: "rtl",
+
+      //escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        minimumInputLength: 3,
+
+      //templateResult: formatRepo, // omitted for brevity, see the source of this page
+      //templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+    });            
+    $("#sel_authors").select2({
+      ajax: {
+        url: _url+'/ajax/authors/',
+        dataType: 'json',
+        delay: 300,
+        //cache: true,
+        processResults: function (data) {
+        //console.log(data.results.items);
+          return {
+            results: data.results.items
+          };
+        },
+
+      },
+      language: "ar",
+      dir: "rtl",
+
+      //escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        minimumInputLength: 3,
+
+      //templateResult: formatRepo, // omitted for brevity, see the source of this page
+      //templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+    });            
+    $("#sel_book").on("select2:select",function(e,d){
+        if(e.params.data.id){
+            $("#bu_gotoBook").fadeIn();
+        }
+        //if(e.params.data.id == -1){
+        //    $(this).data("seledAll",true);
+        //}
+    });
+    $("#sel_author").on("select2:select",function(e,d){
+        if(e.params.data.id){
+            $("#bu_gotoAuthor").fadeIn();
+        }
+        //if(e.params.data.id == -1){
+        //    $(this).data("seledAll",true);
+        //}
+    });
+    $("#sel_author_page").on("select2:select",function(e,d){
+        if(e.params.data.id){
+            $("#bu_gotoAuthor_page").fadeIn();
+        }
+        //if(e.params.data.id == -1){
+        //    $(this).data("seledAll",true);
+        //}
+    });    
+    $("#sel_books,#sel_authors,#sel_aqsam,#sel_decades").on("select2:selecting",function(e,d){
+        c1("selecting");
+        c1($(this));
+        //$(this).data("seledAll",true);
+        if(e.params.args.data.id == -1){
+            $(this).data("seledAll",true);
+        }
+    });
+
+    $("#sel_books,#sel_authors,#sel_aqsam,#sel_decades").on("change",function(e,d){
+       //console.log( $(this).val().length);
+        c1(1);
+        c1($(this).data("seledAll"));
+        //c1(e);
+        //c1(d);
+        if($(this).data("seledAll")){
+            $(this).data("seledAll", false);
+            $(this).val([-1]).change();
+            return;
+        }
+       if($(this).val() && $(this).val().length > 1){
+           c1(22);
+           var val = $(this).val();
+           var index = val.indexOf("-1");
+           c1(val);
+           if((index) != -1){
+               c1(33);
+               val.splice(index,1);
+               c1(val);
+               $(this).val(val).change();
+
+           }
+       }
+        else if(!$(this).val()){
+            c1(44);
+            $(this).val(-1).change();
+        }
+       //console.log($(this).val()); 
+
+    });
+    $("#bu_gotoBook").click(function(){
+        location.href = _url+"book/"+$("#sel_book").val();
+    });
+    $("#bu_gotoAuthor").click(function(){
+        location.href = _url+"author/"+$("#sel_author").val();
+    });
+    $("#bu_gotoAuthor_page").click(function(){
+        location.href = _url+"author/"+$("#sel_author_page").val();
+    });    
+    var currSrchCri = {};
+    var orgSrchCri = {};
+    function doSearch(criteria,done,fail){
+        
+        $("#res_fltrs").hide();
+        $.post(_url+'ajax/search',criteria)
+        .done(function(data){
+            $("#res_fltrs").show();
+            if(done){
+                done(data);
+            }
+            else{
+                $("#srch_res").html(data);            
+                if($("#srch_res #res_filters_aqsam").length){
+                    $("#aqsam_fltr").html($("#srch_res #res_filters_aqsam").html());
+                }
+                if($("#srch_res #res_filters_decades").length){
+                    $("#decades_fltr").html($("#srch_res #res_filters_decades").html());
+                }
+
+                $('#res_modal').modal('show');
+
+            }
+        })
+        .fail(function(){
+            if(fail){
+                fail();
+            }
+            else{
+                $('#res_modal').modal('hide');
+                _toastr("عفوا هناك مشكلة، يرجى المحاولة مرة أخرى","top-right","error",false);
+            }
+        });
+    }
+    $('a[href*="narrator"]').on("click", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        $("#tarjama_res").html('<div class="text-center margin-top-40 margin-bottom-40"><span class="fa fa-spinner fa-spin size-20"></div>');
+        var id = $(this).attr('href').split('narrator/')[1] || 0;
+        if(! id) return;
+        //alert(_url+'ajax/tarjama/'+id);
+        //return;
+        $.get(_url+'ajax/tarjama/'+id)
+        .done(function(data){
+            if(data){
+                $('#tarjama_modal').modal('show');
+                $('#tarjama_res').html(data);
+            }
+            
+        });          
+    });
+    $("#bu_srchAll").on("click",function(){
+        //alert(1);
+        $("#srch_res").html('<div class="text-center margin-top-40 margin-bottom-40"><span class="fa fa-spinner fa-spin size-20"></div>');            
+        $('#res_modal').modal('show');
+        currSrchCri = {'term':$("#fld_srchAll").val()};
+        orgSrchCri = $.extend(true,{},currSrchCri);
+        doSearch(currSrchCri);
+    });
+    $("#bu_srchFor").on("click",function(){
+        //alert(1);
+        $("#srch_res").html('<div class="text-center margin-top-40 margin-bottom-40"><span class="fa fa-spinner fa-spin size-20"></div>');            
+        $('#res_modal').modal('show');
+        //c1($("#sel_aqsam").val());
+        currSrchCri = {'term':$("#fld_srchFor").val(),'aqsam':$("#sel_aqsam").val(),'decades':$("#sel_decades").val()||['-1'],'authors':$("#sel_authors").val(),'books':$("#sel_books").val()}
+        orgSrchCri = $.extend(true,{},currSrchCri);
+        doSearch(currSrchCri);
+
+    });
+    $("#bu_srchBook").on("click",function(){
+        //alert(1);
+        $("#srch_res").html('<div class="text-center margin-top-40 margin-bottom-40"><span class="fa fa-spinner fa-spin size-20"></div>');            
+        $('#res_modal').modal('show');
+        //c1($("#sel_aqsam").val());
+        currSrchCri = {'term':$("#fld_srchBook").val(),'books':[$(this).data("book_id")]};
+        orgSrchCri = $.extend(true,{},currSrchCri);
+        doSearch(currSrchCri);
+
+    });    
+    $("#srch_res").on("click", "#bu_srch_more", function(){
+        $("#bu_srch_more>.fa-spin").show();
+        var cri = {'term':$(this).data('term'),'aqsam':new String($(this).data('aqsam')).split(','),'decades':new String($(this).data('decades')).split(','),'authors':new String($(this).data('authors')).split(','),'books':new String($(this).data('books')).split(','), 'page':$(this).data('page')};
+        doSearch(cri,function(data){
+            $("#bu_srch_more").remove();
+            $("#srch_res").append(data);
+        },function(){
+            $("#bu_srch_more>.fa-spin").hide();
+            _toastr("عفوا هناك مشكلة، يرجى المحاولة مرة أخرى","top-right","error",false);
+        });
+    });
+    $("#res_modal").on("click", ".chkPrev", function(){
+        var box = $(this).prev('input');
+        box.prop("checked", !box.prop("checked")).change();
+    });
+    $("#res_modal").on("change", ".chkAll", function(){
+        $(this).parents('.fltr').find(".chkBox").prop("checked", $(this).prop("checked"));
+    });
+    $("#res_modal").on("click", ".removeFltr", function(){
+        var key = $(this).data('type');
+        $(this).addClass('softhide');
+        currSrchCri[key] = orgSrchCri[key];
+        $("#srch_res").html('<div class="text-center margin-top-40 margin-bottom-40"><span class="fa fa-spinner fa-spin size-20"></div>');            
+
+        doSearch(currSrchCri)
+    });
+    $("#res_modal").on("click", ".applyFltr", function(){
+        var items = $(this).parents('.fltr').find('.chkBox:checked').map(function() {return this.value;}).get();
+        if(! items.length){
+            alert("عفوا لم تقم بالتحديد");
+            return;
+        }
+        var key = $(this).parents('.fltr').data('type');
+
+        currSrchCri[key] = items;
+        $(".removeFltr[data-type='"+key+"']").removeClass('softhide');
+        $("#srch_res").html('<div class="text-center margin-top-40 margin-bottom-40"><span class="fa fa-spinner fa-spin size-20"></div>');            
+
+        doSearch(currSrchCri/*,function(data){
+            $("#srch_res").html(data);
+        },function(){
+            $("#bu_srch_more>.fa-spin").hide();
+            _toastr("عفوا هناك مشكلة، يرجى المحاولة مرة أخرى","top-right","error",false);
+        }*/);
+        
+    });
+    $(".showFltr").on("click",function(){
+        if($(this).hasClass('active')){
+            $('.showFltr').removeClass('active');
+            $('.fltr').hide();
+        }
+        else{
+            $('.showFltr').removeClass('active');
+            $(this).addClass('active');
+            $('.fltr').hide();
+            $('.fltr[data-type="'+$(this).data('fltr')+'"]').show();
+        }
+    });
+    
+    
+    $('#fld_srchAll,#fld_srchBook,#fld_goto_top,#fld_goto_bottom,#fld_specialNum_top').on('keydown', function(e) {
+        var bu = $(this).attr("id").replace(/fld_/,'bu_');
+        if (e.which == 13) {
+            e.preventDefault();
+            $("#"+bu).click();
+        }
+    });    
+    $('#fld_goto_top,#fld_goto_bottom,#fld_part_top,#fld_part_bottom,#fld_specialNum_top').on('focus', function(e){
+        $(this).select();
+    });
+
+
+  $('#contact_frm').submit(function(e){
+        e.preventDefault();
+        $('#contact_name,#contact_email,contact_txt').removeClass('err');
+        isErr = false;
+        if($('#contact_name').val().length < 3){
+            $('#contact_name').addClass('err');
+            isErr = true;
+        }
+        if($('#contact_email').val().length < 3){
+            $('#contact_email').addClass('err');
+            isErr = true;
+        }   
+        if($('#contact_txt').val().length < 3){
+            $('#contact_txt').addClass('err');
+            isErr = true;
+        }   
+        if(isErr) return;
+        
+        $.post(_url+'ajax/contact/send',{'contact_name':$('#contact_name').val(),'contact_email':$('#contact_email').val(),'contact_txt':$('#contact_txt').val()})
+        .done(function(){
+            $('#contact_frm')[0].reset();
+            _toastr("تم الإرسال بنجاح","top-right","success",false);
+            $("#contact-modal").modal('hide');
+
+        })
+        .fail(function(){
+            _toastr("عفوا فشل الإرسال","top-right","error",false);
+        })
+        //alert($('#contact_name').val());
+       
+    });     
+    
+    $("#fld_goto_top").on("focus", function(){
+        $("#bu_goto_top").fadeIn();
+    });
+    $("#fld_specialNum_top").on("focus", function(){
+        $("#bu_specialNum_top").fadeIn();
+    });
+    $("#bu_showSrch,#bu_header_searchBook").on("click",function(){
+        $("#cont_srchBook").fadeToggle();
+        if($("#cont_srchBook").is(":visible")){
+            $("#fld_srchBook").focus();
+        }
+    });
+    $("#bu_header_searchAll").on("click",function(){
+        $("#srch_modal").modal("show");
+    });
+    $("#bu_share").on("click", function() {
+        if (navigator.share) {
+            navigator.share({
+                title: document.title,
+                url: window.location.href
+            }).catch(console.error);
+        } else {
+            alert("Sharing not supported by this browser.");
+        }
+    });
+
+    $("#share_fb").on("click",function(){
+        var url = encodeURIComponent(window.location.href);
+        window.open('http://www.facebook.com/sharer.php?u='+url,'sharer','toolbar=0,status=0,width=626,height=436');
+
+    });
+    $("#share_tw").on("click",function(){
+        var url = encodeURIComponent(document.title+': '+window.location.href);
+        window.open('http://twitter.com/home?status='+url,'twit','toolbar=0,status=0,width=626,height=436');
+        //$(this).href=
+    });
+    $("#share_whats").on("click",function(){
+        var url = encodeURIComponent(document.title+': '+"\n"+window.location.href);
+        $(this).attr('href','whatsapp://send?='+url);
+        //$(this).href=
+    });
+    
+    var clipboard = new Clipboard('#copy_link', {
+            text: function(trigger) {
+                return window.location.href;
+            }
+        });
+    clipboard.on('success', function(e) {
+        _toastr("تم نسخ الرابط بنجاح","top-right","success",false);
+    });
+
+    clipboard.on('error', function(e) {
+        _toastr("عفوا لم يتم نسخ الرابط","top-right","error",false);
+        
+    });
+    var currActivePara=null;
+    $(".btn_tag").click(function(){
+        currActivePara = $(this).parent();
+        $("#copyLink_txt").text($(this).parent().text()+"\r\n"+"--------"+"\r\n"+document.title);
+        
+        $("#addPara_bu").attr("disabled",false);
+        $("#copyLink_modal").modal('show');
+        setTimeout(function(){
+            $("#copyLink_url").val(location.href);
+        },200);
+        
+
+
+    });
+    $("#addPara_bu").click(function(){
+        if(currActivePara.next('p')[0]){
+            currActivePara = currActivePara.next('p');
+            $("#copyLink_txt").text( $.trim($("#copyLink_txt").text().split("--------")[0])+"\r\n"+currActivePara.text()+"\r\n"+"--------"+"\r\n"+document.title )
+        }
+        else{
+            $(this).attr("disabled",true);
+        }
+    });
+    var clipboard_tag = new Clipboard('.copyPara_bu', {
+            text: function(trig) {
+                //console.log(trigger);
+                var copy = $(trig).data('copy');
+                if(copy == 'copyall'){
+                    return $("#copyLink_txt").text()+"\r\n"+'--------'+"\r\n"+'الرابط:'+$("#copyLink_url").val();
+                }
+                else if(copy == 'copypara'){
+                    return $("#copyLink_txt").text();
+                }
+                else{
+                    return $("#copyLink_url").val();
+                }
+                
+            }
+        });
+    clipboard_tag.on('success', function(e) {
+        _toastr("تم النسخ بنجاح","top-right","success",false);
+    });
+
+    clipboard_tag.on('error', function(e) {
+        _toastr("عفوا لم يتم النسخ","top-right","error",false);
+        
+    });
+    
+    $(".fld_filter").keydown(function(e){
+        if (e.which == 13) {
+            $(this).blur();
+            $(document).scrollTop($(document).scrollTop()+70);        
+        }
+            
+    });
+  
+});
+$(window).load(function(){
+    $("#srch_modal").modal({
+        remote:false,
+        show:false,
+    });
+})
+function hiliteActive(){
+    $el = $(".s-nav ul li a.active");
+    if(! $el[0]) return;
+}
+var _filterCatBooks = debounce(function(input){
+    val = $(input).val().toLocaleLowerCase();
+    $("#cat_books .book_title").each(function(){
+       (this.innerText.toLocaleLowerCase().indexOf(val) == -1)?$(this).parents(".book_item").hide():$(this).parents(".book_item").show();
+    })
+},500);
+var _filterCats = debounce(function(input){
+    val = $(input).val().toLocaleLowerCase();
+    $("#cats>.cat_title").each(function(){
+       (this.innerText.toLocaleLowerCase().indexOf(val) == -1)?$(this).hide():$(this).show();
+    });
+},500);
+
+function filterCatBooks(input){
+    _filterCatBooks(input)
+}
+function filterCats(input){
+    _filterCats(input)
+}
+
+function storeData(k,v){
+    window.localStorage.setItem(k,v);
+}
+function getData(k){
+    return window.localStorage.getItem(k);
+}
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+function c1(a){console.log(a)}
+

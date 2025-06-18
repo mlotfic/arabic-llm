@@ -1,7 +1,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
+*$py
+.*.pyc
+.venv/
+venv/
+class
+
 
 # C extensions
 *.so
@@ -192,4 +197,16 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# API keys and secrets
+.env
+*.key
+
+# System files (Windows/macOS)
+Thumbs.db
+.DS_Store 
+
+src/**/.gitkeep
+
+# ignore large files
 TurathIngestor/data/raw/Sanadset 650K Data on Hadith Narrators/Sanadset 650K Data on Hadith Narrators/sanadset.csv.gz
