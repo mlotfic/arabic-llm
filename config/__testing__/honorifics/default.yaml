@@ -1,0 +1,59 @@
+# ==================== honorifics/default.yaml ====================
+# conf/honorifics/default.yaml
+
+before_honorifics:
+  - "الشيخ"
+  - "الإمام"
+  - "الحافظ"
+  - "القاضي"
+  - "السيد"
+  - "العلامة"
+  - "الفقيه"
+  - "المحدث"
+  - "المجتهد"
+  - "المفسر"
+  - "الولي"
+  - "المقرئ"
+  - "العالم"
+  - "الأستاذ"
+
+after_honorifics:
+  - "صلى الله عليه وسلم"  # SAW - Prophet
+  - "عليه السلام"        # AS - Peace be upon him
+  - "رضي الله عنه"       # RA (male) - Companions
+  - "رضي الله عنها"      # RA (female) - Companions
+  - "رضي الله عنهم"      # RA (plural) - Companions
+  - "رحمه الله"          # RH (male) - Scholars
+  - "رحمها الله"         # RH (female) - Scholars
+  - "رحمهم الله"         # RH (plural) - Scholars
+  - "رحمة الله عليه"     # May Allah have mercy on him
+  - "رحمة الله عليها"    # May Allah have mercy on her
+  - "أجزل الله مثوبته"   # May Allah reward him abundantly
+  - "تقبله الله"         # May Allah accept him
+  - "غفر الله له"        # May Allah forgive him
+  - "عفا الله عنه"       # May Allah pardon him
+  - "تغمده الله برحمته"  # May Allah cover him with mercy
+
+prophet_honorifics:
+  - "صلى الله عليه وسلم"
+  - "عليه الصلاة والسلام"
+  - "صلوات الله وسلامه عليه"
+
+companion_honorifics:
+  - "رضي الله عنه"
+  - "رضي الله عنها"
+  - "رضي الله عنهم"
+  - "رضي الله عنهما"
+  - "رضوان الله عليه"
+  - "رضوان الله عليها"
+
+scholar_honorifics:
+  - "رحمه الله"
+  - "رحمها الله"
+  - "رحمهم الله"
+  - "رحمة الله عليه"
+  - "رحمة الله عليها"
+  - "أجزل الله مثوبته"
+  - "تغمده الله برحمته"
+  - "عفا الله عنه"
+  - "غفر الله له"

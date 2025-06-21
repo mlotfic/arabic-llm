@@ -1,0 +1,12 @@
+# config/settings.yaml
+app:
+  name: hadith-analyzer
+  version: 1.0.2
+  environment: dev
+
+paths:
+  input_dir: data/raw/
+  output_dir: data/processed/
+  log_dir: logs/
+  model_dir: models/
+  cache_dir: cache/

@@ -1,0 +1,16 @@
+# config/grading_keywords.yaml
+authenticity:
+  sahih:
+    score: 5
+    keywords: ["صحيح", "authentic", "موثق"]
+  daif:
+    score: 2
+    keywords: ["ضعيف", "weak", "not reliable"]
+
+isnaad_status:
+  muttasil:
+    score: 5
+    keywords: ["متصل", "connected"]
+  munqati:
+    score: 1
+    keywords: ["منقطع", "broken"]

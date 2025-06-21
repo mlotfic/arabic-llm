@@ -209,5 +209,6 @@ Thumbs.db
 src/**/.gitkeep
 
 # ignore large files
-TurathIngestor/data/raw/Sanadset 650K Data on Hadith Narrators/Sanadset 650K Data on Hadith Narrators/sanadset.csv.gz
-TurathIngestor/data/raw/alminasa.ai/hadith_data_bookwise.tar.gz
+TurathIngestor/data/*
+TurathIngestor/data/*
+data/*

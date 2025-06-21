@@ -1,0 +1,249 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jun 20 15:14:53 2025
+
+@author: m
+"""
+
+shamela_ws_categories = [
+    {
+        "source"  : "shamela.ws",
+        "category": "العقيدة",
+        "book_count": 803,
+        "category_id": 1
+    },
+    {
+        "source"  : "shamela.ws",
+        "category": "الفرق والردود",
+        "book_count": 151,
+        "category_id": 2
+    },
+    {
+        "source"  : "shamela.ws",
+        "category": "التفسير",
+        "book_count": 271,
+        "category_id": 3
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "علوم القرآن وأصول التفسير",
+        "book_count": 309,
+        "category_id": 4
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "التجويد والقراءات",
+        "book_count": 151,
+        "category_id": 5
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "كتب السنة",
+        "book_count": 1240,
+        "category_id": 6
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "شروح الحديث",
+        "book_count": 264,
+        "category_id": 7
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "التخريج والأطراف",
+        "book_count": 128,
+        "category_id": 8
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "العلل والسؤلات الحديثية",
+        "book_count": 76,
+        "category_id": 9
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "علوم الحديث",
+        "book_count": 320,
+        "category_id": 10
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "أصول الفقه",
+        "book_count": 247,
+        "category_id": 11
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "علوم الفقه والقواعد الفقهية",
+        "book_count": 57,
+        "category_id": 12
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "المنطق",
+        "book_count": 11,
+        "category_id": 13
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الفقه الحنفي",
+        "book_count": 85,
+        "category_id": 14
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الفقه المالكي",
+        "book_count": 86,
+        "category_id": 15
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الفقه الشافعي",
+        "book_count": 87,
+        "category_id": 16
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الفقه الحنبلي",
+        "book_count": 151,
+        "category_id": 17
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الفقه العام",
+        "book_count": 206,
+        "category_id": 18,
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "مسائل فقهية",
+        "book_count": 424,
+        "category_id": 19
+    },
+    {     
+        "source"  : "shamela.ws",
+        "category": "السياسة الشرعية والقضاء",
+        "book_count": 100,
+        "category_id": 20
+    },
+    {
+        "source"  : "shamela.ws",
+        "category": "الفرائض والوصايا",
+        "book_count": 28,
+        "category_id": 21
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الفتاوى",
+        "book_count": 64,
+        "category_id": 22
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الرقائق والآداب والأذكار",
+        "book_count": 623,
+        "category_id": 23
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "السيرة النبوية",
+        "book_count": 187,
+        "category_id": 24
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "التاريخ",
+        "book_count": 202,
+        "category_id": 25
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "التراجم والطبقات",
+        "book_count": 574,
+        "category_id": 26
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الأنساب",
+        "book_count": 52,
+        "category_id": 27
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "البلدان والرحلات",
+        "book_count": 93,
+        "category_id": 28
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "كتب اللغة",
+        "book_count": 79,
+        "category_id": 29
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الغريب والمعاجم",
+        "book_count": 134,
+        "category_id": 30
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "النحو والصرف",
+        "book_count": 213,
+        "category_id": 31
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الأدب",
+        "book_count": 406,
+        "category_id": 32
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "العروض والقوافي",
+        "book_count": 9,
+        "category_id": 33
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الشعر ودواوينه",
+        "book_count": 25,
+        "category_id": 34
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "البلاغة",
+        "book_count": 44, 
+        "category_id": 35
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الجوامع",
+        "book_count": 136,
+        "category_id": 36
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "فهارس الكتب والأدلة",
+        "book_count": 101,
+        "category_id": 37
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "الطب",
+        "book_count": 14,
+        "category_id": 38
+    },
+    {
+     "source"  : "shamela.ws",
+        "category": "كتب عامة",
+        "book_count": 356,
+        "category_id": 39
+    },
+    {
+        "source"  : "shamela.ws",
+        "category": "علوم أخرى",
+        "book_count": 26,
+        "category_id": 40
+    }
+]

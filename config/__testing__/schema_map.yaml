@@ -1,0 +1,12 @@
+# config/schema_map.yaml
+hadith:
+  table: hadiths
+  fields:
+    - name: text
+      type: string
+    - name: narrator_chain
+      type: array
+    - name: grade
+      type: int
+    - name: authenticity
+      type: string

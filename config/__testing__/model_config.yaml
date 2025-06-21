@@ -1,0 +1,12 @@
+# config/model_config.yaml
+preprocessing:
+  remove_tashkeel: true
+  normalize_arabic: true
+
+vectorizer:
+  type: tfidf
+  max_features: 5000
+
+classifier:
+  type: random_forest
+  n_estimators: 100

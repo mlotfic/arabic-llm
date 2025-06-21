@@ -1,0 +1,305 @@
+# Date Extraction Configuration
+# Configuration for Arabic/Islamic date pattern extraction
+
+# Calendar conversion factors
+calendar_conversion:
+  gregorian_to_hijri_offset: 622
+  gregorian_to_hijri_factor: 0.97
+  hijri_to_gregorian_factor: 0.97
+
+# Date deduplication settings
+deduplication:
+  tolerance_days: 1
+  keep_first_occurrence: true
+
+# Keyword definitions
+keywords:
+  hijri:
+    - "هـ"
+    - "هــ" 
+    - "هـــ"
+    - "ه"
+    - "سنة هجرية"
+    - "هجري"
+    - "هجرية"
+    - "السنة الهجرية"
+    - "بالهجري"
+    - "بالهجرية"
+    - "للهجرة"
+    - "AH"
+    - "After Hijra"
+  
+  gregorian:
+    - "م"
+    - "ميلادي"
+    - "ميلادية"
+    - "AD"
+    - "Anno Domini"
+    - "CE"
+    - "Common Era"
+    - "السنة الميلادية"
+    - "بالميلادي"
+    - "بالميلادية"
+    - "المسيحي"
+    - "المسيحية"
+    - "الإفرنجي"
+    - "الإفرنجية"
+    - "الغربي"
+    - "الغربية"
+  
+  year_indicators:
+    - "سنة"
+    - "عام"
+    - "في عام"
+    - "في سنة"
+    - "خلال عام"
+    - "خلال سنة"
+    - "في السنة"
+    - "خلال السنة"
+    - "في العام"
+    - "خلال العام"
+    - "في هذه السنة"
+    - "خلال هذه السنة"
+    - "في هذا العام"
+    - "خلال هذا العام"
+
+# Pattern definitions in priority order
+patterns:
+  # Complex range patterns (highest priority)
+  - name: "from_to_hijri_gregorian"
+    pattern: '\b(من|منذ)\s+(?P<hijri_group>{hijri_pattern})\s+(إلى|الى|حتى|وحتى|إلي|الي)\s+(?P<gregorian_group>{gregorian_pattern})\b'
+    description: "Matches a range from Hijri to Gregorian with 'من' and 'إلى'."
+    example: "من 1440 هـ إلى 2023 م"
+    priority: 1
+    match_type: "range"
+    hijri_start: 3
+    gregorian_start: null
+    hijri_end: null
+    gregorian_end: 7
+
+  - name: "from_to_gregorian_hijri"
+    pattern: '(من|منذ)\s+(?P<gregorian_group>{gregorian_pattern})\s+(إلى|الى|حتى|وحتى|إلي|الي)\s+(?P<hijri_group>{hijri_pattern})'
+    description: "Matches a range from Gregorian to Hijri with 'من' and 'إلى'."
+    example: "من 2020 م إلى 1442 هـ"
+    priority: 1
+    match_type: "range"
+    hijri_start: null
+    gregorian_start: 3
+    hijri_end: 7
+    gregorian_end: null
+
+  # Mixed patterns (parenthetical, slash, etc.)
+  - name: "parenthetical_hijri_gregorian"
+    pattern: '(?P<hijri_group>{hijri_pattern})\s*[\(\[]\s*(?P<gregorian_group>{gregorian_pattern})\s*[\)\]]'
+    description: "Matches Hijri in parentheses with Gregorian."
+    example: "1445 هـ (2023 م)"
+    priority: 2
+    match_type: "mixed"
+    hijri_start: 2
+    gregorian_start: 5
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "slash_hijri_gregorian"
+    pattern: '(?P<hijri_group>{hijri_pattern})\s*/\s*(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches Hijri and Gregorian separated by a slash."
+    example: "1445 هـ/2023 م"
+    priority: 2
+    match_type: "mixed"
+    hijri_start: 2
+    gregorian_start: 5
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "parenthetical_gregorian_hijri"
+    pattern: '(?P<gregorian_group>{gregorian_pattern})\s*[\(\[]\s*(?P<hijri_group>{hijri_pattern})\s*[\)\]]'
+    description: "Matches Gregorian in parentheses with Hijri."
+    example: "2023 م (1445 هـ)"
+    priority: 2
+    match_type: "mixed"
+    hijri_start: 5
+    gregorian_start: 2
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "slash_gregorian_hijri"
+    pattern: '(?P<gregorian_group>{gregorian_pattern})\s*/\s*(?P<hijri_group>{hijri_pattern})'
+    description: "Matches Gregorian and Hijri separated by a slash."
+    example: "2023 م/1445 هـ"
+    priority: 2
+    match_type: "mixed"
+    hijri_start: 5
+    gregorian_start: 2
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "mixed_hijri_gregorian"
+    pattern: '(?P<hijri_group>{hijri_pattern})\s*(-|\s*|\\|\(|\[)\s*(?P<gregorian_group>{gregorian_pattern})(\)|\])?'
+    description: "Matches mixed Hijri and Gregorian with various separators."
+    example: "1445 هـ - 2023 م"
+    priority: 2
+    match_type: "mixed"
+    hijri_start: 1
+    gregorian_start: 2
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "mixed_hijri_gregorian1"
+    pattern: '(\d{1,4})\s*/\s*(\d{1,4})\s*(هـ/م)'
+    description: "Matches mixed Hijri and Gregorian with various separators."
+    example: "1445/2023 هـ/م"
+    priority: 2
+    match_type: "mixed"
+    hijri_start: 2
+    gregorian_start: 6
+    hijri_end: null
+    gregorian_end: null
+
+  # Range patterns (same calendar system)
+  - name: "hijri_range"
+    pattern: '(\d{1,4})\s*(-|إلى|الى|حتى|وحتى|إلي|الي|\\)\s*(?P<hijri_group>{hijri_pattern})'
+    description: "Matches a range of Hijri years."
+    example: "1440 - 1445 هـ"
+    priority: 3
+    match_type: "range"
+    hijri_start: 1
+    gregorian_start: null
+    hijri_end: 4
+    gregorian_end: null
+
+  - name: "gregorian_range"
+    pattern: '(\d{1,4})\s*(-|إلى|الى|حتى|وحتى|إلي|الي|\\)\s*(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches a range of Gregorian years."
+    example: "2020 - 2023 م"
+    priority: 3
+    match_type: "range"
+    hijri_start: null
+    gregorian_start: 1
+    hijri_end: null
+    gregorian_end: 4
+
+  - name: "from_to_hijri"
+    pattern: '(من|منذ)\s+(\d{1,4})\s+(إلى|الى|حتى|وحتى|إلي|الي)\s+(?P<hijri_group>{hijri_pattern})'
+    description: "Matches a Hijri year range with 'من' and 'إلى'."
+    example: "من 1440 إلى 1445 هـ"
+    priority: 3
+    match_type: "range"
+    hijri_start: 2
+    gregorian_start: null
+    hijri_end: 5
+    gregorian_end: null
+
+  - name: "from_to_gregorian"
+    pattern: '(من|منذ)\s+(\d{1,4})\s+(إلى|الى|حتى|وحتى|إلي|الي)\s+(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches a Gregorian year range with 'من' and 'إلى'."
+    example: "من 2020 إلى 2023 م"
+    priority: 3
+    match_type: "range"
+    hijri_start: null
+    gregorian_start: 2
+    hijri_end: null
+    gregorian_end: 5
+
+  # Approximate patterns
+  - name: "approximate_hijri"
+    pattern: '(حوالي|نحو|تقريباً|تقريبا|قريب من|حول|في حدود|قرابة)\s+(?P<hijri_group>{hijri_pattern})'
+    description: "Matches approximate Hijri years."
+    example: "حوالي 1440 هـ"
+    priority: 5
+    match_type: "year"
+    hijri_start: 3
+    gregorian_start: null
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "approximate_gregorian"
+    pattern: '(حوالي|نحو|تقريباً|تقريبا|قريب من|حول|في حدود|قرابة)\s+(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches approximate Gregorian years."
+    example: "حوالي 2020 م"
+    priority: 5
+    match_type: "year"
+    hijri_start: null
+    gregorian_start: 3
+    hijri_end: null
+    gregorian_end: null
+
+  # Before/after patterns
+  - name: "before_after_hijri"
+    pattern: '(قبل|بعد|منذ|حتى)\s+(?P<hijri_group>{hijri_pattern})'
+    description: "Matches Hijri years with 'قبل' or 'بعد'."
+    example: "قبل 1445 هـ"
+    priority: 6
+    match_type: "year"
+    hijri_start: 3
+    gregorian_start: null
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "before_after_gregorian"
+    pattern: '(قبل|بعد|منذ|حتى)\s+(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches Gregorian years with 'قبل' or 'بعد'."
+    example: "بعد 2020 م"
+    priority: 6
+    match_type: "year"
+    hijri_start: null
+    gregorian_start: 3
+    hijri_end: null
+    gregorian_end: null
+
+  # Flexible year patterns
+  - name: "year_flexible_hijri"
+    pattern: '({year_pattern})\s+(?P<hijri_group>{hijri_pattern})'
+    description: "Matches Hijri years with flexible year markers."
+    example: "سنة 1445 هـ"
+    priority: 7
+    match_type: "year"
+    hijri_start: 4
+    gregorian_start: null
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "year_flexible_gregorian"
+    pattern: '({year_pattern})\s+(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches Gregorian years with flexible year markers."
+    example: "عام 2023 م"
+    priority: 7
+    match_type: "year"
+    hijri_start: null
+    gregorian_start: 4
+    hijri_end: null
+    gregorian_end: null
+
+  # Basic single date patterns (lowest priority)
+  - name: "hijri"
+    pattern: '(?P<hijri_group>{hijri_pattern})'
+    description: "Matches single Hijri years."
+    example: "1445 هـ"
+    priority: 8
+    match_type: "year"
+    hijri_start: 2
+    gregorian_start: null
+    hijri_end: null
+    gregorian_end: null
+
+  - name: "gregorian"
+    pattern: '(?P<gregorian_group>{gregorian_pattern})'
+    description: "Matches single Gregorian years."
+    example: "2023 م"
+    priority: 8
+    match_type: "year"
+    hijri_start: null
+    gregorian_start: 2
+    hijri_end: null
+    gregorian_end: null
+
+  # Flexible year without explicit markers (lowest priority)
+  - name: "year_flexible"
+    pattern: '({year_pattern})\s+(\d{1,4})'
+    description: "Matches years without explicit markers."
+    example: "سنة 1445"
+    priority: 9
+    match_type: "year"
+    hijri_start: 3
+    gregorian_start: null
+    hijri_end: null
+    gregorian_end: null

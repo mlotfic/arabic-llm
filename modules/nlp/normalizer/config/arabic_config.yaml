@@ -1,0 +1,209 @@
+# Arabic Text Normalization Configuration
+# This configuration defines character mappings for normalizing Arabic text
+# from various Arabic-script languages to standard Arabic
+
+# Text cleaning pipeline order (applied sequentially)
+pipeline_order:
+  - persian_to_arabic
+  - urdu_to_arabic
+  - pashto_to_arabic
+  - kurdish_to_arabic
+  - uyghur_to_arabic
+  - sindhi_to_arabic
+  - malay_to_arabic
+  - arabic_variants
+  - other_safe_to_arabic
+  - punctuation_normalization
+  - numbers_normalization
+  - diacritics
+  - tatweel
+  - zero_width_chars
+
+# Persian (Farsi) characters to standard Arabic
+persian_to_arabic:
+  ک: ك  # Persian keheh → Arabic kaf
+  گ: ك  # Persian gaf → Arabic kaf
+  پ: ب  # Persian peh → Arabic beh
+  چ: ج  # Persian cheh → Arabic jeem
+  ژ: ز  # Persian jeh → Arabic zain
+  ی: ي  # Persian yeh → Arabic yeh
+  ى: ي  # Alef maksura → Arabic yeh
+
+# Urdu characters to standard Arabic
+urdu_to_arabic:
+  ے: ي  # Yeh barree → Arabic yeh
+  ۓ: ي  # Yeh barree with hamza → Arabic yeh
+  ں: ن  # Noon ghunna → Arabic noon
+  ٹ: ت  # Teh with ring → Arabic teh
+  ڈ: د  # Dal with dot below → Arabic dal
+  ڑ: ر  # Reh with small v below → Arabic reh
+  ہ: ه  # Heh goal → Arabic heh
+  ھ: ه  # Heh doachashmee → Arabic heh
+  ۃ: ه  # Teh marbuta goal → Arabic heh
+  ۂ: ه  # Heh goal with hamza → Arabic heh
+
+# Pashto characters to standard Arabic
+pashto_to_arabic:
+  ږ: ز  # Reh with dots → Arabic zain
+  ښ: ش  # Shin with dot below → Arabic sheen
+  ګ: ك  # Gaf with ring → Arabic kaf
+  ڼ: ن  # Noon with ring → Arabic noon
+  ړ: ر  # Reh with ring → Arabic reh
+  ۍ: ي  # Yeh with tail → Arabic yeh
+  ې: ي  # Yeh with small v above → Arabic yeh
+  ځ: ج  # Hah with hamza above → Arabic jeem
+  څ: ج  # Hah with three dots above → Arabic jeem
+  ډ: د  # Dal with ring → Arabic dal
+  ټ: ت  # Teh with ring → Arabic teh
+
+# Kurdish (Sorani) characters to standard Arabic
+kurdish_to_arabic:
+  ڕ: ر  # Reh with small v above → Arabic reh
+  ڵ: ل  # Lam with small v above → Arabic lam
+  ۆ: و  # Waw with small v above → Arabic waw
+  ێ: ي  # Yeh with small v above → Arabic yeh
+  ڤ: ف  # Feh with three dots above → Arabic feh
+
+# Uyghur characters to standard Arabic
+uyghur_to_arabic:
+  ۇ: و  # Waw with damma above → Arabic waw
+  ۈ: و  # Waw with alef above → Arabic waw
+  ۉ: و  # Waw with inverted small v → Arabic waw
+  ۊ: و  # Waw with two dots above → Arabic waw
+
+# Sindhi characters to standard Arabic
+sindhi_to_arabic:
+  ٻ: ب  # Beh with dot below → Arabic beh
+  ڀ: ب  # Beh with small v below → Arabic beh
+  ٺ: ت  # Teh with dot above → Arabic teh
+  ٿ: ت  # Theh with dot above → Arabic teh
+  ڄ: ج  # Jeem with dot below → Arabic jeem
+  چھ: ج  # Cheh with dot above → Arabic jeem
+  ڃ: ج  # Nyeh → Arabic jeem
+  ڊ: د  # Dal variants → Arabic dal
+  ڏ: د  # Dal variants → Arabic dal
+  ڙ: ر  # Reh with small v below → Arabic reh
+  ڪ: ك  # Swash kaf → Arabic kaf
+  ڬ: ك  # Gaf with two dots below → Arabic kaf
+  ڮ: ك  # Ngoeh → Arabic kaf
+  ڶ: ل  # Lam with dot above → Arabic lam
+  ڷ: ل  # Lam with three dots above → Arabic lam
+  ڸ: ل  # Lam with three dots below → Arabic lam
+  ڻ: ن  # Noon with three dots above → Arabic noon
+  ڦ: ف  # Feh with dot below → Arabic feh
+  ڳ: ك  # Gaf with two dots below → Arabic kaf
+
+# Malay (Jawi) characters to standard Arabic
+malay_to_arabic:
+  ڠ: ن  # Ng → Arabic noon
+  ݢ: ك  # Gaf with dot above → Arabic kaf
+  ۑ: ي  # Yeh with three dots below → Arabic yeh
+  ڽ: ن  # Knotted heh → Arabic noon
+  ۏ: و  # Waw with dot above → Arabic waw
+
+# Arabic letter variants to standard forms
+arabic_variants:
+  # Alef variants
+  أ: ا  # Alef with hamza above → Arabic alef
+  إ: ا  # Alef with hamza below → Arabic alef
+  آ: ا  # Alef with madda above → Arabic alef
+  ٱ: ا  # Alef wasla → Arabic alef
+  ٲ: ا  # Alef with wavy hamza above → Arabic alef
+  ٳ: ا  # Alef with wavy hamza below → Arabic alef
+  # Heh variants
+  ۀ: ه  # Heh with yeh above → Arabic heh
+  # Waw variants
+  ؤ: و  # Waw with hamza above → Arabic waw
+  ۄ: و  # Waw with ring → Arabic waw
+  # Yeh variants
+  ئ: ي  # Yeh with hamza above → Arabic yeh
+  ؠ: ي  # Yeh with small v above → Arabic yeh
+  ى: ي  # Alef maksura → Arabic yeh
+
+# Other safe language-specific letters
+other_safe_to_arabic:
+  ڡ: ف  # Feh with dot moved below → Arabic feh
+  ۺ: س  # Seen with small tah and two dots → Arabic seen
+  ۼ: ق  # Qaf with dot above → Arabic qaf
+  ڭ: ك  # Ng → Arabic kaf
+
+# Punctuation normalization
+punctuation_normalization:
+  ",": "،"  # Comma → Arabic comma
+  ";": "؛"  # Semicolon → Arabic semicolon
+  "?": "؟"  # Question mark → Arabic question mark
+
+# Number normalization (Arabic-Indic and Persian to Western)
+numbers_normalization:
+  # Arabic-Indic digits to Western
+  ٠: "0"
+  ١: "1"
+  ٢: "2"
+  ٣: "3"
+  ٤: "4"
+  ٥: "5"
+  ٦: "6"
+  ٧: "7"
+  ٨: "8"
+  ٩: "9"
+  # Persian digits to Western
+  ۰: "0"
+  ۱: "1"
+  ۲: "2"
+  ۳: "3"
+  ۴: "4"
+  ۵: "5"
+  ۶: "6"
+  ۷: "7"
+  ۸: "8"
+  ۹: "9"
+
+# Arabic diacritics (harakat) removal
+diacritics:
+  َ: ""   # Fatha
+  ِ: ""   # Kasra
+  ُ: ""   # Damma
+  ً: ""   # Tanween fath
+  ٍ: ""   # Tanween kasr
+  ٌ: ""   # Tanween damm
+  ْ: ""   # Sukun
+  ّ: ""   # Shadda
+  ٰ: ""   # Superscript alef
+  ٖ: ""   # Small high seen
+  ٗ: ""   # Small high qaf
+  ٘: ""   # Mark noon ghunna
+
+# Quranic and extended Arabic diacritical marks
+quranic_marks:
+  ࣰ: ""  # Quranic Open Fathatan
+  ࣱ: ""  # Quranic Open Dammatan
+  ࣲ: ""  # Quranic Open Kasratan
+  ۡ: ""  # Quranic Sukun
+  ۤ: ""  # Arabic Small High Madda
+  ۨ: ""  # Arabic Small High Yeh
+  ۪: ""  # Arabic Small High Noon
+  ۫: ""  # Arabic Small Low Meem
+  ۬: ""  # Arabic Small Low Seen
+  ۭ: ""  # Arabic Small High Seen
+
+# Tatweel (kashida) removal
+tatweel:
+  ـ: ""  # TATWEEL (Kashida)
+
+# Zero-width characters removal
+zero_width_chars:
+  "\u200C": ""  # Zero Width Non-Joiner
+  "\u200D": ""  # Zero Width Joiner
+  "\u200E": ""  # Left-to-Right Mark
+  "\u200F": ""  # Right-to-Left Mark
+  "\u202A": ""  # Left-to-Right Embedding
+  "\u202B": ""  # Right-to-Left Embedding
+  "\u202C": ""  # Pop Directional Formatting
+  "\u202D": ""  # Left-to-Right Override
+  "\u202E": ""  # Right-to-Left Override
+
+# Processing options
+processing:
+  normalize_whitespace: true  # Convert multiple spaces to single space
+  strip_whitespace: true      # Remove leading/trailing whitespace
+  case_sensitive: true        # Character mapping is case-sensitive
